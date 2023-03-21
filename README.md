@@ -17,3 +17,7 @@ Please open an issue if you experience a bug or have product feedback!
 
 ## Deployment
 -  React app will be built using yarn build and served through Koa server (same server used for boardgame.io server and lobby)
+
+
+#package.json comment
+"start": "node -r esm src/server.js",
