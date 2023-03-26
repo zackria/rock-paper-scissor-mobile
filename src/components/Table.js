@@ -15,7 +15,7 @@ export default function Table(game) {
   const [buzzed, setBuzzer] = useState(
     some(game.G.queue, (o) => o.id === game.playerID)
   );
-  const [sound, setSound] = useState(false);
+  const [sound, setSound] = useState(true);
   const [soundPlayed, setSoundPlayed] = useState(false);
   const buzzButton = useRef(null);
 
@@ -23,7 +23,7 @@ export default function Table(game) {
   const [player2, setPlayer2] = useState("");
   const [bestofValue, setbestofValue] = useState("");
   const [isPlayersSet, setisPlayersSet] = useState(false);
-  const [isError, setisError] = useState("false");
+  const [isError, setisError] = useState(false);
   const [errorMessage, seterrorMessage] = useState("");
   const [player1Score, setplayer1Score] = useState(0);
   const [player2Score, setplayer2Score] = useState(0);
@@ -88,6 +88,10 @@ export default function Table(game) {
       setisError(true);
     } else {
       setisError(false);
+      if (sound) {
+        throwSound.play();
+      }
+
       if (isWinner(player1Temp, player2Temp)) {
         tempPlayer1Score = player1Score + 1;
         setplayer1Score(tempPlayer1Score);
@@ -112,6 +116,7 @@ export default function Table(game) {
         );
         setisShowScoreBoard(true);
         setisGameOver(true);
+        winnerSound.play();
       } else if (
         tempPlayer2Score === bestofValue ||
         tempPlayer2Score >= bestofValue
@@ -121,6 +126,7 @@ export default function Table(game) {
         );
         setisShowScoreBoard(true);
         setisGameOver(true);
+        winnerSound.play();
       }
     }
   };
@@ -145,6 +151,24 @@ export default function Table(game) {
     src: [
       `${process.env.PUBLIC_URL}/shortBuzz.webm`,
       `${process.env.PUBLIC_URL}/shortBuzz.mp3`,
+    ],
+    volume: 0.5,
+    rate: 1.5,
+  });
+
+  const winnerSound = new Howl({
+    src: [
+      `${process.env.PUBLIC_URL}/game_show_winner.webm`,
+      `${process.env.PUBLIC_URL}/game_show_winner.mp3`,
+    ],
+    volume: 0.5,
+    rate: 1.5,
+  });
+
+  const throwSound = new Howl({
+    src: [
+      `${process.env.PUBLIC_URL}/boxing_bell_start.webm`,
+      `${process.env.PUBLIC_URL}/boxing_bell_start.mp3`,
     ],
     volume: 0.5,
     rate: 1.5,
@@ -374,16 +398,16 @@ export default function Table(game) {
                   </span>
                 ) : null}
                 {isGameOver ? (
-                  <span>
+                  <span className="shakeeffect">
                     <h3>
                       Game Over
                       <br />
                       <br />
                       {gameOverMessage}
-                      <br />
                     </h3>
                   </span>
                 ) : null}
+                <br />
                 <button
                   name="Throw"
                   value="Throw"
