@@ -30,6 +30,7 @@ export default function Table(game) {
   const [scoreBoard, setscoreBoard] = useState("");
   const [isShowScoreBoard, setisShowScoreBoard] = useState(false);
   const [isGameOver, setisGameOver] = useState(false);
+  const [isShowThrow, setisShowThrow] = useState(false);
   const [gameOverMessage, setgameOverMessage] = useState("");
 
   const changePlayer1 = (e) => {
@@ -103,6 +104,7 @@ export default function Table(game) {
       );
 
       setisShowScoreBoard(true);
+      setisShowThrow(true);
 
       if (tempPlayer1Score === bestofValue || tempPlayer1Score >= bestofValue) {
         setgameOverMessage(
@@ -195,6 +197,11 @@ export default function Table(game) {
       game.moves.buzz(game.playerID, "Scissors");
       setBuzzer(true);
     }
+  };
+
+  const resetBuzzersFunc = () => {
+    setisShowThrow(false);
+    game.moves.resetBuzzers();
   };
 
   // spacebar will buzz
@@ -461,7 +468,7 @@ export default function Table(game) {
               <div className="button-container">
                 <button
                   disabled={isEmpty(game.G.queue)}
-                  onClick={() => game.moves.resetBuzzers()}
+                  onClick={() => resetBuzzersFunc()}
                 >
                   Reset all buzzers
                 </button>
@@ -496,7 +503,7 @@ export default function Table(game) {
                   <div className={`name ${!connected ? "dim" : ""}`}>
                     {name}
 
-                    {isHost ? (
+                    {isHost && isShowThrow ? (
                       <span className="demo">: {queue[i].rps}</span>
                     ) : null}
 
