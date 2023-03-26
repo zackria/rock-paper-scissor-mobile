@@ -1,9 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { get, some, values, sortBy, orderBy, isEmpty, round } from 'lodash';
-import { Howl } from 'howler';
-import { AiOutlineDisconnect } from 'react-icons/ai';
-import { Container } from 'react-bootstrap';
-import Header from '../components/Header';
+import React, { useState, useEffect, useRef } from "react";
+import { get, some, values, sortBy, orderBy, isEmpty, round } from "lodash";
+import { Howl } from "howler";
+import { AiOutlineDisconnect } from "react-icons/ai";
+import { Container } from "react-bootstrap";
+import Header from "../components/Header";
+import { FaHandPaper, FaHandPeace, FaHandRock } from "react-icons/fa";
+import { BsController, BsFillPersonFill } from "react-icons/bs";
+import { BiError } from "react-icons/bi";
+import { GiTabletopPlayers } from "react-icons/gi";
+import { IoMdSync } from "react-icons/io";
 
 export default function Table(game) {
   const [loaded, setLoaded] = useState(false);
@@ -13,6 +18,126 @@ export default function Table(game) {
   const [sound, setSound] = useState(false);
   const [soundPlayed, setSoundPlayed] = useState(false);
   const buzzButton = useRef(null);
+
+  const [player1, setPlayer1] = useState("");
+  const [player2, setPlayer2] = useState("");
+  const [bestofValue, setbestofValue] = useState("");
+  const [isPlayersSet, setisPlayersSet] = useState(false);
+  const [isError, setisError] = useState("false");
+  const [errorMessage, seterrorMessage] = useState("");
+  const [player1Score, setplayer1Score] = useState(0);
+  const [player2Score, setplayer2Score] = useState(0);
+  const [scoreBoard, setscoreBoard] = useState("");
+  const [isShowScoreBoard, setisShowScoreBoard] = useState(false);
+  const [isGameOver, setisGameOver] = useState(false);
+  const [gameOverMessage, setgameOverMessage] = useState("");
+
+  const changePlayer1 = (e) => {
+    setPlayer1(e.target.value);
+  };
+
+  const changePlayer2 = (e) => {
+    setPlayer2(e.target.value);
+  };
+
+  const changeBestOfDD = (e) => {
+    setbestofValue(e.target.value);
+  };
+
+  const setPlayers = (e) => {
+    if (player1 === "" || player2 === "") {
+      seterrorMessage("Please select the players");
+      setisPlayersSet(false);
+      setisError(true);
+    } else if (player1 === player2) {
+      seterrorMessage("Player1 & Player2 cannot be same");
+      setisPlayersSet(false);
+      setisError(true);
+    } else if (bestofValue === "") {
+      seterrorMessage("Please select the best of value");
+      setisPlayersSet(false);
+      setisError(true);
+    } else {
+      setisError(false);
+      setisPlayersSet(true);
+    }
+  };
+
+  const getPlayersSelection = () => {
+    var player1Temp = "";
+    var player2Temp = "";
+    for (let value of buzzedPlayers.values()) {
+      if (value.name === player1) {
+        player1Temp = value.rps;
+      } else if (value.name === player2) {
+        player2Temp = value.rps;
+      }
+    }
+    score(player1Temp, player2Temp);
+  };
+
+  const score = (player1Temp, player2Temp) => {
+    var tempPlayer1Score = 0;
+    var tempPlayer2Score = 0;
+    if (player1Temp === null || player1Temp === "") {
+      seterrorMessage("Not all players have selected the option");
+      setisError(true);
+    } else if (player2Temp === null || player2Temp === "") {
+      seterrorMessage("Not all players have selected the option");
+      setisError(true);
+    } else {
+      setisError(false);
+      if (isWinner(player1Temp, player2Temp)) {
+        tempPlayer1Score = player1Score + 1;
+        setplayer1Score(tempPlayer1Score);
+      } else {
+        tempPlayer2Score = player2Score + 1;
+        setplayer2Score(tempPlayer2Score);
+      }
+
+      setscoreBoard(
+        "Player 1 Score: " +
+          tempPlayer1Score +
+          "  || Player 2 Score: " +
+          tempPlayer2Score
+      );
+
+      setisShowScoreBoard(true);
+
+      if (tempPlayer1Score === bestofValue || tempPlayer1Score >= bestofValue) {
+        setgameOverMessage(
+          "Player 1 Won the Game with Score: " + tempPlayer1Score
+        );
+        setisShowScoreBoard(true);
+        setisGameOver(true);
+      } else if (
+        tempPlayer2Score === bestofValue ||
+        tempPlayer2Score >= bestofValue
+      ) {
+        setgameOverMessage(
+          "Player 2 Won the Game with Score: " + tempPlayer2Score
+        );
+        setisShowScoreBoard(true);
+        setisGameOver(true);
+      }
+    }
+  };
+
+  const isWinner = (p1Option, p2Option) => {
+    let selectionBeat = new Map();
+    selectionBeat.set("Rock", "Scissors");
+    selectionBeat.set("Paper", "Rock");
+    selectionBeat.set("Scissors", "Paper");
+
+    return selectionBeat.get(p1Option) === p2Option;
+  };
+
+  const resetScores = () => {
+    setplayer1Score(0);
+    setplayer2Score(0);
+    setisShowScoreBoard(false);
+    setisGameOver(false);
+  };
 
   const buzzSound = new Howl({
     src: [
@@ -48,18 +173,10 @@ export default function Table(game) {
     }
   }, [game.G.queue]);
 
-  const attemptBuzz = () => {
-    if (!buzzed) {
-      playSound();
-      game.moves.buzz(game.playerID);
-      setBuzzer(true);
-    }
-  };
-
   const attemptBuzzRock = () => {
     if (!buzzed) {
       playSound();
-      game.moves.buzz(game.playerID, 'Rock');
+      game.moves.buzz(game.playerID, "Rock");
       setBuzzer(true);
     }
   };
@@ -67,7 +184,7 @@ export default function Table(game) {
   const attemptBuzzPaper = () => {
     if (!buzzed) {
       playSound();
-      game.moves.buzz(game.playerID, 'Paper');
+      game.moves.buzz(game.playerID, "Paper");
       setBuzzer(true);
     }
   };
@@ -75,7 +192,7 @@ export default function Table(game) {
   const attemptBuzzScissor = () => {
     if (!buzzed) {
       playSound();
-      game.moves.buzz(game.playerID, 'Scissors');
+      game.moves.buzz(game.playerID, "Scissors");
       setBuzzer(true);
     }
   };
@@ -88,24 +205,24 @@ export default function Table(game) {
         e.preventDefault();
       }
     }
-    window.addEventListener('keydown', onKeydown);
-    return () => window.removeEventListener('keydown', onKeydown);
+    window.addEventListener("keydown", onKeydown);
+    return () => window.removeEventListener("keydown", onKeydown);
   }, []);
 
   const players = !game.gameMetadata
     ? []
     : game.gameMetadata
-      .filter((p) => p.name)
-      .map((p) => ({ ...p, id: String(p.id) }));
+        .filter((p) => p.name)
+        .map((p) => ({ ...p, id: String(p.id) }));
   // host is lowest active user
   const firstPlayer =
     get(
       sortBy(players, (p) => parseInt(p.id, 10)).filter((p) => p.connected),
-      '0'
+      "0"
     ) || null;
-  const isHost = get(firstPlayer, 'id') === game.playerID;
+  const isHost = get(firstPlayer, "id") === game.playerID;
 
-  const queue = sortBy(values(game.G.queue), ['timestamp']);
+  const queue = sortBy(values(game.G.queue), ["timestamp"]);
 
   const buzzedPlayers = queue
     .map((p) => {
@@ -123,9 +240,11 @@ export default function Table(game) {
   // active players who haven't buzzed
   const activePlayers = orderBy(
     players.filter((p) => !some(queue, (q) => q.id === p.id)),
-    ['connected', 'name'],
-    ['desc', 'asc']
+    ["connected", "name"],
+    ["desc", "asc"]
   );
+
+  const listOfPlayers = players;
 
   const timeDisplay = (delta) => {
     if (delta > 1000) {
@@ -158,13 +277,135 @@ export default function Table(game) {
           <div id="buzzerid">
             <br></br>
             <h3 id="label-title">
-              Status: {game.G.locked ? 'Locked' : buzzed ? 'Buzzed' : 'Ready'}
+              Status: {game.G.locked ? "Locked" : buzzed ? "Buzzed" : "Ready"}
             </h3>
             <br></br>
+            {isHost ? (
+              <span
+                className="hostplayers-dp1"
+                id="hostplayers-dp1"
+                key="hostplayers-dp1"
+              >
+                Player One&nbsp;
+                <select
+                  name="player1"
+                  id="player1-select"
+                  value={player1}
+                  onChange={changePlayer1}
+                >
+                  <option value="" name="" id="dummyval1"></option>
+                  {listOfPlayers.map(({ id, name, connected }) => (
+                    <option
+                      value={name}
+                      id={"p1drop" + name}
+                      key={"p1drop" + name}
+                    >
+                      {name}
+                    </option>
+                  ))}
+                </select>
+                &nbsp; PlayerTwo&nbsp;
+                <select
+                  name="player2"
+                  id="player2-select"
+                  value={player2}
+                  onChange={changePlayer2}
+                >
+                  <option value="" name="" id="dummyval2"></option>
+                  {listOfPlayers.map(({ id, name, connected }) => (
+                    <option
+                      value={name}
+                      id={"p2drop" + name}
+                      key={"p2drop" + name}
+                    >
+                      {name}
+                    </option>
+                  ))}
+                </select>
+                &nbsp; &nbsp;
+                <button
+                  name="SetPlayers"
+                  value="SetPlayers"
+                  className="button"
+                  id="setplayers-button"
+                  onClick={setPlayers}
+                >
+                  <GiTabletopPlayers style={{ color: "#f1db39" }} /> SetPlayers
+                </button>
+                <br></br>
+                <br></br>
+                Best of{" "}
+                <select
+                  name="bestof"
+                  id="bestof-select"
+                  onChange={changeBestOfDD}
+                >
+                  <option value="" name="" id="dummyval3"></option>
+                  <option value="3">3</option>
+                  <option value="5">5</option>
+                  <option value="7">7</option>
+                  <option value="9">9</option>
+                </select>
+                <br></br>
+                <br></br>
+                {isError ? (
+                  <span>
+                    <h3 style={{ color: "red" }}>
+                      <BiError /> {errorMessage}
+                    </h3>
+                  </span>
+                ) : null}
+                {isPlayersSet ? (
+                  <span>
+                    <h3 id="label-players">
+                      {" "}
+                      <BsFillPersonFill /> One : {player1} vs.{" "}
+                      <BsFillPersonFill /> Two: {player2}{" "}
+                    </h3>
+                    <br />
+                    <br />
+                  </span>
+                ) : null}
+                {isGameOver ? (
+                  <span>
+                    <h3>
+                      Game Over
+                      <br />
+                      <br />
+                      {gameOverMessage}
+                      <br />
+                    </h3>
+                  </span>
+                ) : null}
+                <button
+                  name="Throw"
+                  value="Throw"
+                  className="button"
+                  id="throw-button"
+                  onClick={getPlayersSelection}
+                  disabled={isGameOver}
+                >
+                  <BsController style={{ color: "#f1db39" }} /> Throw
+                </button>
+                &nbsp;&nbsp;
+                <button
+                  name="ResetScores"
+                  value="ResetScores"
+                  className="button"
+                  id="throw-button"
+                  onClick={resetScores}
+                >
+                  <IoMdSync style={{ color: "#f1db39" }} /> Reset Scores
+                </button>
+                <br></br>
+                <br></br>
+              </span>
+            ) : null}
             <button
               name="Rock"
               value="Rock"
-              class="button"
+              id="rock-button"
+              className="button"
               disabled={buzzed || game.G.locked}
               onClick={() => {
                 if (!buzzed && !game.G.locked) {
@@ -172,13 +413,14 @@ export default function Table(game) {
                 }
               }}
             >
-              Rock
-            </button>{' '}
+              <FaHandRock style={{ color: "#f1db39" }} /> Rock
+            </button>{" "}
             &nbsp;&nbsp;&nbsp;
             <button
               name="Paper"
               value="Paper"
-              class="button"
+              className="button"
+              id="paper-button"
               disabled={buzzed || game.G.locked}
               onClick={() => {
                 if (!buzzed && !game.G.locked) {
@@ -186,13 +428,14 @@ export default function Table(game) {
                 }
               }}
             >
-              Paper
-            </button>{' '}
+              <FaHandPaper style={{ color: "#f1db39" }} /> Paper
+            </button>{" "}
             &nbsp;&nbsp;&nbsp;
             <button
               name="Scissors"
               value="Scissors"
-              class="button"
+              className="button"
+              id="scissor-button"
               disabled={buzzed || game.G.locked}
               onClick={() => {
                 if (!buzzed && !game.G.locked) {
@@ -200,25 +443,10 @@ export default function Table(game) {
                 }
               }}
             >
-              Scissors
-            </button>{' '}
+              <FaHandPeace style={{ color: "#f1db39" }} /> Scissors
+            </button>{" "}
             &nbsp;&nbsp;&nbsp;
           </div>
-
-          {/* 
-          <div id="buzzer">
-            <button
-              ref={buzzButton}
-              disabled={buzzed || game.G.locked}
-              onClick={() => {
-                if (!buzzed && !game.G.locked) {
-                  attemptBuzz();
-                }
-              }}
-            >
-              {game.G.locked ? 'Locked' : buzzed ? 'Buzzed' : 'Buzz'}
-            </button>
-          </div> */}
 
           {isHost ? (
             <div className="settings">
@@ -227,7 +455,7 @@ export default function Table(game) {
                   className="text-button"
                   onClick={() => game.moves.toggleLock()}
                 >
-                  {game.G.locked ? 'Unlock buzzers' : 'Lock buzzers'}
+                  {game.G.locked ? "Unlock buzzers" : "Lock buzzers"}
                 </button>
               </div>
               <div className="button-container">
@@ -238,15 +466,25 @@ export default function Table(game) {
                   Reset all buzzers
                 </button>
               </div>
+
+              {isShowScoreBoard ? (
+                <span>
+                  <br />
+                  <h3> Score Board </h3>
+                  <p>{scoreBoard} </p>
+                </span>
+              ) : null}
+
               <div className="divider" />
             </div>
           ) : null}
         </section>
+
         <div className="queue">
           <p>Players Buzzed</p>
           <ul>
             {buzzedPlayers.map(({ id, name, timestamp, connected }, i) => (
-              <li key={id} className={isHost ? 'resettable' : null}>
+              <li key={id} className={isHost ? "resettable" : null}>
                 <div
                   className="player-sign"
                   onClick={() => {
@@ -255,18 +493,17 @@ export default function Table(game) {
                     }
                   }}
                 >
-                  <div className={`name ${!connected ? 'dim' : ''}`}>
+                  <div className={`name ${!connected ? "dim" : ""}`}>
                     {name}
+
                     {isHost ? (
-                      <span className="demo">
-                        : {queue[i].rps}
-                      </span>
+                      <span className="demo">: {queue[i].rps}</span>
                     ) : null}
 
                     {!connected ? (
                       <AiOutlineDisconnect className="disconnected" />
                     ) : (
-                      ''
+                      ""
                     )}
                   </div>
                   {i > 0 ? (
@@ -284,12 +521,12 @@ export default function Table(game) {
           <ul>
             {activePlayers.map(({ id, name, connected }) => (
               <li key={id}>
-                <div className={`name ${!connected ? 'dim' : ''}`}>
+                <div className={`name ${!connected ? "dim" : ""}`}>
                   {name}
                   {!connected ? (
                     <AiOutlineDisconnect className="disconnected" />
                   ) : (
-                    ''
+                    ""
                   )}
                 </div>
               </li>

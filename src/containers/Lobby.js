@@ -1,38 +1,38 @@
-import React, { useState } from 'react';
-import { Container, Form } from 'react-bootstrap';
-import { useLocation, useHistory } from 'react-router-dom';
-import { get } from 'lodash';
-import { joinRoom, getRoom, createRoom } from '../lib/endpoints';
-import Header from '../components/Header';
-import Footer, { FooterSimple } from '../components/Footer';
+import React, { useState } from "react";
+import { Container, Form } from "react-bootstrap";
+import { useLocation, useHistory } from "react-router-dom";
+import { get } from "lodash";
+import { joinRoom, getRoom, createRoom } from "../lib/endpoints";
+import Header from "../components/Header";
+import Footer, { FooterSimple } from "../components/Footer";
 
 const ERROR_TYPE = {
-  emptyCode: 'emptyCode',
-  roomCode: 'roomCode',
-  name: 'name',
-  hostRoom: 'hostRoom',
-  fullRoom: 'fullRoom',
-  dupName: 'dupName',
+  emptyCode: "emptyCode",
+  roomCode: "roomCode",
+  name: "name",
+  hostRoom: "hostRoom",
+  fullRoom: "fullRoom",
+  dupName: "dupName",
 };
 
 const ERROR_MESSAGE = {
-  [ERROR_TYPE.emptyCode]: 'Please enter a room code',
-  [ERROR_TYPE.roomCode]: 'Unable to join room with this code',
-  [ERROR_TYPE.name]: 'Please enter your player name',
-  [ERROR_TYPE.dupName]: 'Player name already taken',
-  [ERROR_TYPE.hostRoom]: 'Unable to create room, please try again',
-  [ERROR_TYPE.fullRoom]: 'Room has reached capacity',
+  [ERROR_TYPE.emptyCode]: "Please enter a room code",
+  [ERROR_TYPE.roomCode]: "Unable to join room with this code",
+  [ERROR_TYPE.name]: "Please enter your player name",
+  [ERROR_TYPE.dupName]: "Player name already taken",
+  [ERROR_TYPE.hostRoom]: "Unable to create room, please try again",
+  [ERROR_TYPE.fullRoom]: "Room has reached capacity",
 };
 
 export default function Lobby({ setAuth }) {
   const location = useLocation();
-  const prefilledRoomID = get(location, 'state.roomID');
+  const prefilledRoomID = get(location, "state.roomID");
 
   const history = useHistory();
-  const [name, setName] = useState('');
-  const [room, setRoom] = useState(prefilledRoomID || '');
+  const [name, setName] = useState("");
+  const [room, setRoom] = useState(prefilledRoomID || "");
   const [joinMode, setJoinMode] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   // enter room: find room, then join it
@@ -59,7 +59,7 @@ export default function Lobby({ setAuth }) {
       if (!playerSeat && !freeSeat) {
         throw new Error(ERROR_TYPE.fullRoom);
       }
-      const playerID = get(playerSeat, 'id', get(freeSeat, 'id'));
+      const playerID = get(playerSeat, "id", get(freeSeat, "id"));
       const joinRes = await joinRoom(room.roomID, playerID, name);
       if (joinRes.status !== 200) {
         throw new Error(ERROR_TYPE.roomCode);
@@ -132,7 +132,7 @@ export default function Lobby({ setAuth }) {
           autoCapitalize="characters"
           spellCheck="false"
           onChange={(e) => {
-            setError('');
+            setError("");
             setRoom(e.target.value);
           }}
         />
@@ -143,7 +143,7 @@ export default function Lobby({ setAuth }) {
         <Form.Control
           value={name}
           onChange={(e) => {
-            setError('');
+            setError("");
             setName(e.target.value);
           }}
         />
@@ -151,14 +151,14 @@ export default function Lobby({ setAuth }) {
 
       <div className="error-message">{error}</div>
       <button type="submit" disabled={loading}>
-        {loading ? 'Joining...' : 'Join'}
+        {loading ? "Joining..." : "Join"}
       </button>
       <div className="switcher">
-        Hosting a game?{' '}
+        Hosting a game?{" "}
         <button
           className="inline"
           onClick={() => {
-            setError('');
+            setError("");
             setJoinMode(false);
           }}
         >
@@ -174,7 +174,7 @@ export default function Lobby({ setAuth }) {
         <Form.Control
           value={name}
           onChange={(e) => {
-            setError('');
+            setError("");
             setName(e.target.value);
           }}
         />
@@ -182,14 +182,14 @@ export default function Lobby({ setAuth }) {
 
       <div className="error-message">{error}</div>
       <button type="submit" disabled={loading}>
-        {loading ? 'Creating...' : 'Host'}
+        {loading ? "Creating..." : "Host"}
       </button>
       <div className="switcher">
-        Joining a game?{' '}
+        Joining a game?{" "}
         <button
           className="inline"
           onClick={() => {
-            setError('');
+            setError("");
             setJoinMode(true);
           }}
         >

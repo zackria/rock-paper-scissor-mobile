@@ -1,14 +1,14 @@
-import React from 'react';
-import { Container } from 'react-bootstrap';
+import React from "react";
+import { Container } from "react-bootstrap";
 
 export function FooterSimple() {
   return (
     <div id="footer-simple">
-      Built on{' '}
+      Built on{" "}
       <a
         target="_blank"
         rel="noopener noreferrer"
-        href="https://github.com/wsun/multibuzzer"
+        href="https://github.com/zackria/rock-paper-scissor-mobile"
       >
         open source
       </a>
@@ -22,14 +22,14 @@ export function FooterSimple() {
  */
 export default function Footer({ mobileOnly = false }) {
   return (
-    <footer className={mobileOnly ? 'd-block d-md-none' : null}>
+    <footer className={mobileOnly ? "d-block d-md-none" : null}>
       <Container>
         <div>
-          Built on{' '}
+          Built on{" "}
           <a
             target="_blank"
             rel="noopener noreferrer"
-            href="https://github.com/wsun/multibuzzer"
+            href="https://github.com/zackria/rock-paper-scissor-mobile"
           >
             open source
           </a>
