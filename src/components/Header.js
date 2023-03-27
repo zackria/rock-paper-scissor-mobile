@@ -8,7 +8,7 @@ import { BsTrophy } from "react-icons/bs";
 export default function Header({
   auth = {},
   clearAuth,
-  sound = true,
+  sound = null,
   setSound,
 }) {
   const history = useHistory();
