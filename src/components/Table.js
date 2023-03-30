@@ -25,8 +25,6 @@ export default function Table(game) {
   const [isPlayersSet, setisPlayersSet] = useState(false);
   const [isError, setisError] = useState(false);
   const [errorMessage, seterrorMessage] = useState("");
-  const [player1Score, setplayer1Score] = useState(0);
-  const [player2Score, setplayer2Score] = useState(0);
   const [scoreBoard, setscoreBoard] = useState("");
   const [isShowScoreBoard, setisShowScoreBoard] = useState(false);
   const [isGameOver, setisGameOver] = useState(false);
@@ -61,6 +59,8 @@ export default function Table(game) {
     } else {
       setisError(false);
       setisPlayersSet(true);
+      sessionStorage.setItem("POneScore", 0);
+      sessionStorage.setItem("PTwoScore", 0);
     }
   };
 
@@ -86,25 +86,64 @@ export default function Table(game) {
     } else if (player2Temp === null || player2Temp === "") {
       seterrorMessage("Not all players have selected the option");
       setisError(true);
+    } else if (player1Temp === player2Temp) {
+      //TODO Check if both player picked same option
+      seterrorMessage("Its a Tie, Please reset and throw again");
+      setisError(true);
     } else {
       setisError(false);
       if (sound) {
         throwSound.play();
       }
-
       if (isWinner(player1Temp, player2Temp)) {
-        tempPlayer1Score = player1Score + 1;
-        setplayer1Score(tempPlayer1Score);
+        tempPlayer1Score = parseInt(sessionStorage.getItem("POneScore")) + 1;
+
+        sessionStorage.setItem("POneScore", tempPlayer1Score);
+
+        console.log(
+          "IsWinner block tempPlayer1Score: " +
+            tempPlayer1Score +
+            " player1Score: " +
+            sessionStorage.getItem("POneScore")
+        );
+        console.log(
+          "Local Storage Player1: " +
+            player1Temp +
+            " " +
+            sessionStorage.getItem("POneScore") +
+            " Local Storage Player2: " +
+            player2Temp +
+            " " +
+            sessionStorage.getItem("PTwoScore")
+        );
       } else {
-        tempPlayer2Score = player2Score + 1;
-        setplayer2Score(tempPlayer2Score);
+        tempPlayer2Score = parseInt(sessionStorage.getItem("PTwoScore")) + 1;
+
+        sessionStorage.setItem("PTwoScore", tempPlayer2Score);
+
+        console.log(
+          "IsWinner block tempPlayer2Score: " +
+            tempPlayer2Score +
+            " player2Score: " +
+            sessionStorage.getItem("PTwoScore")
+        );
+        console.log(
+          "Local Storage Player1: " +
+            player1Temp +
+            " " +
+            sessionStorage.getItem("POneScore") +
+            " Local Storage Player2: " +
+            player2Temp +
+            " " +
+            sessionStorage.getItem("PTwoScore")
+        );
       }
 
       setscoreBoard(
         "Player 1 Score: " +
-          tempPlayer1Score +
+          sessionStorage.getItem("POneScore") +
           "  || Player 2 Score: " +
-          tempPlayer2Score
+          sessionStorage.getItem("PTwoScore")
       );
 
       setisShowScoreBoard(true);
@@ -141,8 +180,9 @@ export default function Table(game) {
   };
 
   const resetScores = () => {
-    setplayer1Score(0);
-    setplayer2Score(0);
+    sessionStorage.setItem("POneScore", 0);
+    sessionStorage.setItem("PTwoScore", 0);
+
     setisShowScoreBoard(false);
     setisGameOver(false);
   };
@@ -394,7 +434,6 @@ export default function Table(game) {
                       <BsFillPersonFill /> Two: {player2}{" "}
                     </h3>
                     <br />
-                    <br />
                   </span>
                 ) : null}
                 {isGameOver ? (
@@ -405,6 +444,13 @@ export default function Table(game) {
                       <br />
                       {gameOverMessage}
                     </h3>
+                  </span>
+                ) : null}
+                {isShowScoreBoard ? (
+                  <span>
+                    <br />
+                    <h3> Score Board </h3>
+                    <p>{scoreBoard} </p>
                   </span>
                 ) : null}
                 <br />
@@ -497,14 +543,6 @@ export default function Table(game) {
                   Reset all buzzers
                 </button>
               </div>
-
-              {isShowScoreBoard ? (
-                <span>
-                  <br />
-                  <h3> Score Board </h3>
-                  <p>{scoreBoard} </p>
-                </span>
-              ) : null}
 
               <div className="divider" />
             </div>
