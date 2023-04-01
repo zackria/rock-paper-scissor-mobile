@@ -158,7 +158,7 @@ export default function Table(game) {
         );
         setisShowScoreBoard(true);
         setisGameOver(true);
-        winnerSound.play();
+        if (sound) winnerSound.play();
       } else if (
         tempPlayer2Score === bestofValue ||
         tempPlayer2Score >= bestofValue
@@ -168,7 +168,7 @@ export default function Table(game) {
         );
         setisShowScoreBoard(true);
         setisGameOver(true);
-        winnerSound.play();
+        if (sound) winnerSound.play();
       }
     }
   };
@@ -396,16 +396,6 @@ export default function Table(game) {
                     </option>
                   ))}
                 </select>
-                &nbsp; &nbsp;
-                <button
-                  name="SetPlayers"
-                  value="SetPlayers"
-                  className="button"
-                  id="setplayers-button"
-                  onClick={setPlayers}
-                >
-                  <GiTabletopPlayers style={{ color: "#f1db39" }} /> SetPlayers
-                </button>
                 <br></br>
                 <br></br>
                 Best of{" "}
@@ -420,6 +410,16 @@ export default function Table(game) {
                   <option value="7">7</option>
                   <option value="9">9</option>
                 </select>
+                &nbsp; &nbsp;
+                <button
+                  name="SetPlayers"
+                  value="SetPlayers"
+                  className="button"
+                  id="setplayers-button"
+                  onClick={setPlayers}
+                >
+                  <GiTabletopPlayers style={{ color: "#f1db39" }} /> SetPlayers
+                </button>
                 <br></br>
                 <br></br>
                 {isError ? (

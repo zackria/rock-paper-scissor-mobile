@@ -88,47 +88,58 @@
       function gtag() {
         dataLayer.push(arguments);
       }
-      gtag('js', new Date());
-      gtag('config', '%REACT_APP_GA%');
-
+      gtag("js", new Date());
+      gtag("config", "%REACT_APP_GA%");
     </script>
     <style>
-.shakeeffect {
-  position: relative;
-  text-transform: uppercase;
-  letter-spacing: 6px;
-  font-size: 10vw;
-  font-weight: 900;
-  text-decoration: none;
-  color: white;
-  display: inline-block;
-  background-size: 120% 100%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  -moz-background-clip: text;
-  -moz-text-fill-color: transparent;
-  -ms-background-clip: text;
-  -ms-text-fill-color: transparent;
-  background-clip: text;
-  text-fill-color: transparent;
-  background-image: linear-gradient(45deg, 
-                    #FF1361, 
-                    #44107A,
-                    #FF1361,
-                    #FFF800);
-  animation: .8s shake infinite alternate;
-}
+      .shakeeffect {
+        position: relative;
+        text-transform: uppercase;
+        letter-spacing: 6px;
+        font-size: 10vw;
+        font-weight: 900;
+        text-decoration: none;
+        color: white;
+        display: inline-block;
+        background-size: 120% 100%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        -moz-background-clip: text;
+        -moz-text-fill-color: transparent;
+        -ms-background-clip: text;
+        -ms-text-fill-color: transparent;
+        background-clip: text;
+        text-fill-color: transparent;
+        background-image: linear-gradient(
+          45deg,
+          #ff1361,
+          #44107a,
+          #ff1361,
+          #fff800
+        );
+        animation: 0.8s shake infinite alternate;
+      }
 
-@keyframes shake {
-  0% { transform: skewX(-15deg); }
-  5% { transform: skewX(15deg); }
-  10% { transform: skewX(-15deg); }
-  15% { transform: skewX(15deg); }
-  20% { transform: skewX(0deg); }
-  100% { transform: skewX(0deg); }  
-}
-
-
+      @keyframes shake {
+        0% {
+          transform: skewX(-15deg);
+        }
+        5% {
+          transform: skewX(15deg);
+        }
+        10% {
+          transform: skewX(-15deg);
+        }
+        15% {
+          transform: skewX(15deg);
+        }
+        20% {
+          transform: skewX(0deg);
+        }
+        100% {
+          transform: skewX(0deg);
+        }
+      }
     </style>
   </head>
   <body>

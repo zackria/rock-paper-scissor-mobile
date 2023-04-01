@@ -4,6 +4,7 @@ import { isNil } from "lodash";
 import { useHistory } from "react-router";
 import { leaveRoom } from "../lib/endpoints";
 import { BsTrophy } from "react-icons/bs";
+import { GoUnmute, GoMute } from "react-icons/go";
 
 export default function Header({
   auth = {},
@@ -35,7 +36,7 @@ export default function Header({
         <div className="nav-buttons">
           {!isNil(sound) ? (
             <button className="text-button" onClick={() => setSound()}>
-              {sound ? "Turn off sound" : "Turn on sound"}
+              {sound ? <GoUnmute size={20} /> : <GoMute size={20} />}
             </button>
           ) : null}
           {clearAuth ? (
