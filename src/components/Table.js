@@ -80,7 +80,10 @@ export default function Table(game) {
   const score = (player1Temp, player2Temp) => {
     var tempPlayer1Score = 0;
     var tempPlayer2Score = 0;
-    if (player1Temp === null || player1Temp === "") {
+    if (!isPlayersSet) {
+      seterrorMessage("Please set players before game start");
+      setisError(true);
+    } else if (player1Temp === null || player1Temp === "") {
       seterrorMessage("Not all players have selected the option");
       setisError(true);
     } else if (player2Temp === null || player2Temp === "") {
